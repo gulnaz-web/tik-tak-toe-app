@@ -4,7 +4,7 @@ import {
   TringleIcon,
   ZeroIcon,
 } from "@/icon-components";
-import { GAME_SYMBOLS } from "@/mock/players/constants";
+import { GAME_SYMBOLS } from "@/components/game/constants";
 import { PlayerDataSymbolType } from "@/mock/players/mock-players";
 
 type GameSymbolType = {

@@ -2,25 +2,30 @@
 
 import { useState } from "react";
 import { GameTitle, GameInfo, GameField, GameLayout } from "./ui";
-import { GAME_SYMBOLS } from "@/mock/players/constants";
 import { GameMoveInfo } from "./ui/GameMoveInfo";
 import { Button } from "@/ui-components";
+import { useGameState } from "./hooks/useGameState";
+
+const actions = (
+  <>
+    <Button className="cursor-pointer" size="md" variant="primary">
+      Ничья
+    </Button>
+    <Button className="cursor-pointer" size="md" variant="outline">
+      Сдаться
+    </Button>
+  </>
+);
+
+const PLAYERS_COUNT = 2;
 
 export const Game = () => {
-  const [playersCount, setPlayersCount] = useState(2);
-  const [currentMove, setCurrentMove] = useState(GAME_SYMBOLS.CROSS);
-  const [isWinner, setIsWinner] = useState(false);
+  const [playersCount, setPlayersCount] = useState<number>(PLAYERS_COUNT);
 
-  const actions = (
-    <>
-      <Button className="cursor-pointer" size="md" variant="primary">
-        Ничья
-      </Button>
-      <Button className="cursor-pointer" size="md" variant="outline">
-        Сдаться
-      </Button>
-    </>
-  );
+  const { cells, currentMove, nextMove, cellClick } =
+    useGameState(playersCount);
+
+  const [isWinner, setIsWinner] = useState(false);
 
   return (
     <>
@@ -28,22 +33,13 @@ export const Game = () => {
         title={
           <GameTitle playersCount={playersCount} timeMode="1 мин на ход" />
         }
-        gameInfo={
-          <GameInfo
-            playersCount={playersCount}
-            currentMove={currentMove}
-            isWinner={isWinner}
-          />
-        }
+        gameInfo={<GameInfo playersCount={playersCount} isWinner={isWinner} />}
         gameMoveInfo={
-          <GameMoveInfo
-            currentMove={currentMove}
-            nextMove={GAME_SYMBOLS.ZERO}
-          />
+          <GameMoveInfo currentMove={currentMove} nextMove={nextMove} />
         }
         actions={actions}
       >
-        <GameField />
+        <GameField cells={cells} onCellClick={cellClick} />
       </GameLayout>
     </>
   );

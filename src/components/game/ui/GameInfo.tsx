@@ -5,14 +5,12 @@ import { PlayerInfo } from "./PlayerInfo";
 type GameInfoType = {
   className?: string;
   playersCount: number;
-  currentMove: string;
   isWinner: boolean;
 };
 
 export const GameInfo = ({
   className,
   playersCount,
-  currentMove,
   isWinner,
 }: GameInfoType) => {
   return (
@@ -25,9 +23,8 @@ export const GameInfo = ({
       {players.slice(0, playersCount).map((player, index) => (
         <PlayerInfo
           key={player.id}
-          player={player}
+          playerInfo={player}
           isRight={index % 2 === 1}
-          isTimerRunning={currentMove === player.symbol && !isWinner}
         />
       ))}
     </div>

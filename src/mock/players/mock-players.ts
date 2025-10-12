@@ -1,4 +1,4 @@
-import { GAME_SYMBOLS } from "./constants";
+import { GAME_SYMBOLS } from "@/components/game/constants";
 import avatarHacker from "./images/avatarHacker.png";
 
 export const players = [

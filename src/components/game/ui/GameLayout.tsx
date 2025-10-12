@@ -20,7 +20,7 @@ export const GameLayout = ({
         {gameInfo}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-md px-8  pt-5 pb-7 mt-6">
+      <div className="bg-white rounded-2xl shadow-md px-8 pt-5 pb-7 mt-6">
         <div className="flex gap-3 items-center">
           <div className="mr-auto">{gameMoveInfo}</div>
           {actions}
