@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GameTitle, GameInfo, GameField, GameLayout } from "./ui";
-import { GameMoveInfo } from "./ui/GameMoveInfo";
+import { GameTitle, GameInfo, GameField, GameMoveInfo, GameLayout } from "./ui";
 import { Button } from "@/ui-components";
 import { useGameState } from "./hooks/useGameState";
 
