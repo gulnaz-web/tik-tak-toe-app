@@ -1,10 +1,10 @@
 import Image, { StaticImageData } from "next/image";
-import avatarSrc from "./avatar.png";
+import avatarSrc from "@/mock/players/images/avatarHacker.png";
 import clsx from "clsx";
 
 type ProfileType = {
   name: string;
-  rating: string;
+  rating: number;
   className?: string;
   avatar?: StaticImageData;
 };

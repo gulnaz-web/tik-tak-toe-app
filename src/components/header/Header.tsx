@@ -17,7 +17,7 @@ export const Header = () => {
       </div>
 
       <div className="ml-auto flex items-center gap-2 text-start text-sky-600 ">
-        <Profile name="Hacker" rating="1230" />
+        <Profile name="Hacker" rating={1230} />
         <ArrowIcon />
       </div>
     </header>

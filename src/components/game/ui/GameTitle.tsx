@@ -2,9 +2,10 @@ import { HistoryIcon, StarIcon, UserIcon } from "@/icon-components";
 
 type GameTitleType = {
   playersCount: number;
+  timeMode: string;
 };
 
-export const GameTitle = ({ playersCount }: GameTitleType) => {
+export const GameTitle = ({ playersCount, timeMode }: GameTitleType) => {
   return (
     <div className="pl-2">
       <h1 className="text-4xl leading-tight">Крестики нолики</h1>
@@ -14,7 +15,7 @@ export const GameTitle = ({ playersCount }: GameTitleType) => {
           <UserIcon /> {playersCount}
         </div>
         <div className="flex items-center gap-1">
-          <HistoryIcon /> 1 мин на ход
+          <HistoryIcon /> {timeMode}
         </div>
       </div>
     </div>
