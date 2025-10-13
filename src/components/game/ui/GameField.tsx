@@ -42,11 +42,10 @@ export const GameField = ({
 }: GameFieldType) => {
   return (
     <div
-      className="grid pl-px pt-px mt-3 w-full max-w-[700px] mx-auto"
+      className="grid pl-px pt-px mt-3 w-full max-w-[700px] mx-auto aspect-square"
       style={{
         gridTemplateColumns: `repeat(${cellSize}, minmax(0, 1fr))`,
         gridTemplateRows: `repeat(${cellSize}, minmax(0, 1fr))`,
-        aspectRatio: "1 / 1",
       }}
     >
       {cells.map((symbol, index) => (
