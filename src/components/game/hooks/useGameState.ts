@@ -1,21 +1,13 @@
 import { useState } from "react";
-import { GAME_SYMBOLS, MOVE_ORDER } from "@/components/game/constants";
+import { GAME_SYMBOLS } from "@/components/game/constants";
+import { getNextMove } from "@/components/game/model/getNextMove";
 import { PlayerDataSymbolType } from "@/mock/players/mock-players";
+import { computeWinner } from "../model/computeWinner";
 
-type GameStateType = {
+export type GameStateType = {
   cells: Array<null | PlayerDataSymbolType>;
   currentMove: PlayerDataSymbolType;
 };
-
-function getNextMove(
-  currentMove: PlayerDataSymbolType,
-  playersCount: number,
-): PlayerDataSymbolType {
-  const slicedMoveOrder = MOVE_ORDER.slice(0, playersCount);
-
-  const nextMoveIndex = slicedMoveOrder.indexOf(currentMove) + 1;
-  return slicedMoveOrder[nextMoveIndex] ?? slicedMoveOrder[0];
-}
 
 export const useGameState = (playersCount: number) => {
   const [{ cells, currentMove }, setGameState] = useState<GameStateType>(
@@ -26,6 +18,8 @@ export const useGameState = (playersCount: number) => {
   );
 
   const nextMove = getNextMove(currentMove, playersCount);
+
+  const winnerSequence = computeWinner(cells);
 
   const cellClick = (index: number) => {
     setGameState((gameState) => {
@@ -40,5 +34,6 @@ export const useGameState = (playersCount: number) => {
       };
     });
   };
-  return { cells, currentMove, nextMove, cellClick };
+
+  return { cells, currentMove, nextMove, winnerSequence, cellClick };
 };

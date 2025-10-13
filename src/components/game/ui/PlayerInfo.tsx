@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { useState } from "react";
 import { Profile } from "@/components/profile/Profile";
 import { PlayerDataType } from "@/mock/players/mock-players";
 import { GameSymbol } from "./GameSymbol";

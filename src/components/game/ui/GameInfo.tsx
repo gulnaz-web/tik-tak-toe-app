@@ -5,14 +5,9 @@ import { PlayerInfo } from "./PlayerInfo";
 type GameInfoType = {
   className?: string;
   playersCount: number;
-  isWinner: boolean;
 };
 
-export const GameInfo = ({
-  className,
-  playersCount,
-  isWinner,
-}: GameInfoType) => {
+export const GameInfo = ({ className, playersCount }: GameInfoType) => {
   return (
     <div
       className={clsx(

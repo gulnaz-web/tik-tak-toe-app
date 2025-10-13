@@ -21,10 +21,8 @@ const PLAYERS_COUNT = 2;
 export const Game = () => {
   const [playersCount, setPlayersCount] = useState<number>(PLAYERS_COUNT);
 
-  const { cells, currentMove, nextMove, cellClick } =
+  const { cells, currentMove, nextMove, winnerSequence, cellClick } =
     useGameState(playersCount);
-
-  const [isWinner, setIsWinner] = useState(false);
 
   return (
     <>
@@ -32,13 +30,17 @@ export const Game = () => {
         title={
           <GameTitle playersCount={playersCount} timeMode="1 мин на ход" />
         }
-        gameInfo={<GameInfo playersCount={playersCount} isWinner={isWinner} />}
+        gameInfo={<GameInfo playersCount={playersCount} />}
         gameMoveInfo={
           <GameMoveInfo currentMove={currentMove} nextMove={nextMove} />
         }
         actions={actions}
       >
-        <GameField cells={cells} onCellClick={cellClick} />
+        <GameField
+          cells={cells}
+          onCellClick={cellClick}
+          winnerSequence={winnerSequence}
+        />
       </GameLayout>
     </>
   );
