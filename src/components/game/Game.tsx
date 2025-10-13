@@ -1,45 +1,63 @@
 "use client";
 
-import { useState } from "react";
-import { GameTitle, GameInfo, GameField, GameMoveInfo, GameLayout } from "./ui";
-import { Button } from "@/ui-components";
+import {
+  GameTitle,
+  GameInfo,
+  GameField,
+  GameMoveInfo,
+  GameLayout,
+  GameActions,
+  PlayerInfo,
+} from "./ui";
 import { useGameState } from "./hooks/useGameState";
-
-const actions = (
-  <>
-    <Button className="cursor-pointer" size="md" variant="primary">
-      Ничья
-    </Button>
-    <Button className="cursor-pointer" size="md" variant="outline">
-      Сдаться
-    </Button>
-  </>
-);
+import { PLAYERS } from "@/mock/players/mock-players";
 
 const PLAYERS_COUNT = 2;
+const CELL_SIZE = 19;
 
 export const Game = () => {
-  const [playersCount, setPlayersCount] = useState<number>(PLAYERS_COUNT);
-
-  const { cells, currentMove, nextMove, winnerSequence, cellClick } =
-    useGameState(playersCount);
+  const {
+    cells,
+    currentMove,
+    nextMove,
+    winnerSequence,
+    winnerSymbol,
+    cellClick,
+    resetGame,
+  } = useGameState(PLAYERS_COUNT, CELL_SIZE);
 
   return (
     <>
       <GameLayout
-        title={
-          <GameTitle playersCount={playersCount} timeMode="1 мин на ход" />
-        }
-        gameInfo={<GameInfo playersCount={playersCount} />}
+        title={<GameTitle />}
+        gameInfo={<GameInfo playersCount={PLAYERS_COUNT} />}
+        playersList={PLAYERS.slice(0, PLAYERS_COUNT).map((player, index) => (
+          <PlayerInfo
+            key={player.id}
+            playerInfo={player}
+            isRight={index % 2 === 1}
+          />
+        ))}
         gameMoveInfo={
-          <GameMoveInfo currentMove={currentMove} nextMove={nextMove} />
+          <GameMoveInfo
+            winnerPlayer={PLAYERS.find(
+              (player) => player.symbol === winnerSymbol,
+            )}
+            winnerSymbol={winnerSymbol}
+            currentMove={currentMove}
+            nextMove={nextMove}
+          />
         }
-        actions={actions}
+        actions={
+          <GameActions isWinner={!!winnerSymbol} playAgain={resetGame} />
+        }
       >
         <GameField
           cells={cells}
           onCellClick={cellClick}
           winnerSequence={winnerSequence}
+          winnerSymbol={winnerSymbol}
+          cellSize={CELL_SIZE}
         />
       </GameLayout>
     </>

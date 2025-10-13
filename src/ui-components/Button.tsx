@@ -1,23 +1,21 @@
 import clsx from "clsx";
 import React from "react";
 
-/**
- * @param {{
- * children: React.ReactNode,
- * className: string,
- * size: 'md' | 'lg',
- * variant: 'primary' | 'outline'
- * }} props
- */
-
 type ButtonType = {
   children: React.ReactNode;
   className?: string;
   size: "md" | "lg";
   variant: "primary" | "outline";
+  onClick?: () => void;
 };
 
-export const Button = ({ children, className, size, variant }: ButtonType) => {
+export const Button = ({
+  children,
+  className,
+  size,
+  variant,
+  ...props
+}: ButtonType) => {
   const buttonClassName = clsx(
     "transition-colors",
     className,
@@ -31,5 +29,9 @@ export const Button = ({ children, className, size, variant }: ButtonType) => {
     }[variant],
   );
 
-  return <button className={buttonClassName}>{children}</button>;
+  return (
+    <button className={buttonClassName} {...props}>
+      {children}
+    </button>
+  );
 };

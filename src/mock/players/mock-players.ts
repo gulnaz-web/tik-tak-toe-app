@@ -1,7 +1,7 @@
 import { GAME_SYMBOLS } from "@/components/game/constants";
 import avatarHacker from "./images/avatarHacker.png";
 
-export const players = [
+export const PLAYERS = [
   {
     id: 1,
     name: "Hacker",
@@ -32,6 +32,6 @@ export const players = [
   },
 ] as const;
 
-export type PlayerDataType = (typeof players)[number];
+export type PlayerDataType = (typeof PLAYERS)[number];
 export type PlayerDataSymbolType =
   (typeof GAME_SYMBOLS)[keyof typeof GAME_SYMBOLS];
