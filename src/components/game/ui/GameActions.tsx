@@ -5,7 +5,7 @@ type GameActionsType = {
   playAgain: () => void;
 };
 
-export const GameActions = ({ isWinner, playAgain }: GameActionsType) => {
+export function GameActions({ isWinner, playAgain }: GameActionsType) {
   if (isWinner) {
     return (
       <Button
@@ -25,4 +25,4 @@ export const GameActions = ({ isWinner, playAgain }: GameActionsType) => {
       </Button>
     </>
   );
-};
+}
