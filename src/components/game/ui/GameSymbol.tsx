@@ -12,7 +12,7 @@ type GameSymbolType = {
   symbol: PlayerDataSymbolType;
 };
 
-export const GameSymbol = ({ symbol, className }: GameSymbolType) => {
+export function GameSymbol({ symbol, className }: GameSymbolType) {
   const Icon =
     {
       [GAME_SYMBOLS.CROSS]: CrossIcon,
@@ -22,4 +22,4 @@ export const GameSymbol = ({ symbol, className }: GameSymbolType) => {
     }[symbol] ?? CrossIcon;
 
   return <Icon className={className} />;
-};
+}
