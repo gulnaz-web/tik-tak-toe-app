@@ -1,490 +1,411 @@
-# 🏗️ Анализ архитектуры Tic-Tac-Toe приложения
+# 📊 АРХИТЕКТУРНЫЙ АНАЛИЗ ПРОЕКТА TIC-TAC-TOE (НА ОСНОВЕ ЧАТА GPT)
 
-## 📊 Схема модулей и зависимостей
+## 🏗 СТРУКТУРА ПРОЕКТА
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                            APP LAYER (page.tsx)                          │
-│                            Entry Point                                   │
-└────────────────────────┬────────────────────────────────────────────────┘
-                         │
-          ┌──────────────┴────────────────┐
-          │                               │
-          ▼                               ▼
-┌─────────────────┐            ┌───────────────────────┐
-│  Header         │            │  Game (Orchestrator)  │  ⚠️ HIGH COUPLING
-│  Component      │            │  - Data fetching      │
-│                 │            │  - Business logic     │
-│  ✅ SRP: OK     │            │  - Presentation       │
-│  ✅ Coupling:   │            └──────────┬────────────┘
-│     Low         │                       │
-│  ✅ Cohesion:   │        ┌──────────────┼──────────────┐
-│     High        │        │              │              │
-└─────────────────┘        ▼              ▼              ▼
-                  ┌─────────────┐  ┌────────────┐  ┌──────────────┐
-                  │ useGameState│  │  UI Layer  │  │  MOCK DATA   │
-                  │   (Hook)    │  │ Components │  │  (PLAYERS)   │
-                  │             │  └────────────┘  └──────────────┘
-                  │ ⚠️ Too many │         │               │
-                  │   responsi- │         │               │
-                  │   bilities  │         │        ⚠️ Tight coupling
-                  └──────┬──────┘         │        to mock data
-                         │                │
-          ┌──────────────┼────────────────┴──────────┐
-          │              │                           │
-          ▼              ▼                           ▼
-    ┌─────────┐   ┌──────────────┐         ┌─────────────────┐
-    │ Model   │   │  Constants   │         │  UI Components  │
-    │ Layer   │   │  GAME_SYMBOLS│         │  (Presentational)│
-    │         │   │  MOVE_ORDER  │         │                 │
-    │ ✅ Pure │   │              │         │  GameField      │
-    │    Func │   │  ✅ SRP: OK  │         │  GameInfo       │
-    │ ✅ Low  │   │  ✅ Cohesion │         │  GameActions    │
-    │    Coup │   └──────────────┘         │  GameMoveInfo   │
-    └─────────┘                            │  PlayerInfo     │
-         │                                 │  GameLayout     │
-         ├─ computeWinner()                │                 │
-         ├─ computeWinnerSymbol()          │  ✅ SRP: OK     │
-         └─ getNextMove()                  │  ⚠️ Props       │
-                                           │     drilling    │
-                                           └─────────────────┘
-                                                    │
-                                                    ▼
-                                           ┌─────────────────┐
-                                           │ Shared UI       │
-                                           │ Components      │
-                                           │                 │
-                                           │  Button         │
-                                           │  Modal          │
-                                           │                 │
-                                           │  ✅ Reusable    │
-                                           │  ✅ SRP: OK     │
-                                           └─────────────────┘
-```
-
----
-
-## 🎯 Анализ по принципам
-
-### 1️⃣ **SRP (Single Responsibility Principle)**
-
-#### ✅ **СИЛЬНЫЕ СТОРОНЫ:**
-
-**Model Layer** - отличное разделение:
-- `computeWinner.ts` - только логика победы
-- `computeWinnerSymbol.ts` - только определение символа победителя
-- `getNextMove.ts` - только очередность ходов
-
-**UI Components** - хорошее разделение:
-- `GameField` - только отрисовка поля
-- `GameSymbol` - только отрисовка символов
-- `GameActions` - только кнопки действий
-- `Button`, `Modal` - переиспользуемые компоненты
-
-**Constants** - выделены в отдельный модуль
-
-#### ❌ **СЛАБЫЕ СТОРОНЫ:**
-
-**1. `Game.tsx` - нарушение SRP:**
-```tsx
-// Делает слишком много:
-// - Управляет данными игроков (PLAYERS)
-// - Определяет конфигурацию (PLAYERS_COUNT, CELL_SIZE)
-// - Управляет бизнес-логикой (через useGameState)
-// - Отвечает за композицию UI
-```
-
-**2. `useGameState` - слишком много ответственности:**
-```tsx
-// Делает:
-// - State management
-// - Бизнес-логика (cellClick, resetGame)
-// - Вычисление победителя
-// - Определение следующего хода
-```
-
-**3. `Header.tsx` - хардкод данных:**
-```tsx
-// Данные игрока зашиты в компонент
-<Profile name="Hacker" rating={1230} />
-```
-
----
-
-### 2️⃣ **COUPLING (Связанность модулей)**
-
-#### ✅ **LOW COUPLING - хорошо:**
-
-**Model функции** - чистые функции без зависимостей:
-```tsx
-computeWinner(cells) // Зависит только от данных
-getNextMove(currentMove, playersCount) // Чистая функция
-```
-
-**UI компоненты** - слабая связь:
-```tsx
-<GameField cells={cells} onCellClick={cellClick} />
-// Получает данные через props, не знает откуда они
-```
-
-#### ❌ **HIGH COUPLING - проблемы:**
-
-**1. Game.tsx ← mock-players:**
-```tsx
-import { PLAYERS } from "@/mock/players/mock-players";
-// Прямая зависимость от моков! 
-// ⚠️ Нельзя использовать реальные данные без рефакторинга
-```
-
-**2. useGameState ← Constants:**
-```tsx
-import { GAME_SYMBOLS } from "@/components/game/constants";
-// Хук знает про константы напрямую
-```
-
-**3. Множественные импорты типов:**
-```tsx
-// Многие модули импортируют:
-import { PlayerDataSymbolType } from "@/mock/players/mock-players";
-// ⚠️ Зависимость от моков во многих местах
-```
-
-**4. useGameState делает слишком много:**
-```tsx
-// Внутри хука:
-import { computeWinner } from "../model/computeWinner";
-import { computeWinnerSymbol } from "../model/computeWinnerSymbol";
-import { getNextMove } from "../model/getNextMove";
-// ⚠️ Хук оркестрирует всю логику игры
-```
-
----
-
-### 3️⃣ **COHESION (Связность внутри модуля)**
-
-#### ✅ **HIGH COHESION - отлично:**
-
-**game/model/** - все функции связаны с игровой логикой:
-```
-model/
-  ├── computeWinner.ts      // Логика победы
-  ├── computeWinnerSymbol.ts // Определение победителя
-  └── getNextMove.ts         // Очередность ходов
-```
-
-**game/ui/** - все компоненты для UI игры:
-```
-ui/
-  ├── GameField.tsx
-  ├── GameInfo.tsx
-  ├── GameActions.tsx
-  └── ...
-```
-
-**icon-components/** - только иконки
-
-#### ⚠️ **СРЕДНЯЯ COHESION:**
-
-**useGameState** - смешивает разные уровни:
-```tsx
-// В одном хуке:
-- State management (useState)
-- Вычисления (computeWinner, getNextMove)
-- Event handlers (cellClick, resetGame)
-```
-
----
-
-## 🚨 Критические проблемы
-
-### 1. **Tight Coupling с Mock Data**
-
-```tsx
-// ❌ ПЛОХО - Game.tsx
-import { PLAYERS } from "@/mock/players/mock-players";
-
-// В компоненте:
-PLAYERS.find((player) => player.symbol === winnerSymbol)
-PLAYERS.slice(0, PLAYERS_COUNT).map(...)
-```
-
-**Проблема:** Невозможно использовать с реальными данными из API без рефакторинга.
-
-**Решение:**
-```tsx
-// ✅ ХОРОШО
-type GameProps = {
-  players: PlayerData[];
-  playersCount: number;
-  cellSize: number;
-}
-
-export const Game = ({ players, playersCount, cellSize }: GameProps) => {
-  // players приходят извне
-}
-```
-
----
-
-### 2. **useGameState - God Object**
-
-```tsx
-// ❌ ПЛОХО - делает всё
-useGameState(playersCount, cellSize) => {
-  cells, currentMove, nextMove, winnerSequence, 
-  winnerSymbol, cellClick, resetGame
-}
-```
-
-**Проблема:** Невозможно переиспользовать части логики отдельно.
-
-**Решение:** Разделить на несколько хуков:
-```tsx
-// ✅ ХОРОШО
-useGameCells(cellSize) => { cells, setCells }
-useCurrentMove(playersCount) => { currentMove, nextMove, switchMove }
-useWinner(cells) => { winnerSequence, winnerSymbol }
-useGameActions() => { cellClick, resetGame }
-```
-
----
-
-### 3. **Props Drilling**
-
-```tsx
-// Game.tsx передает кучу пропсов вниз:
-<GameMoveInfo 
-  winnerPlayer={...}
-  winnerSymbol={...}
-  currentMove={...}
-  nextMove={...}
-/>
-```
-
-**Проблема:** При добавлении новых данных нужно прокидывать через все уровни.
-
-**Решение:** Context API или state management (Zustand/Redux):
-```tsx
-// ✅ ХОРОШО
-const GameContext = createContext<GameState>();
-
-function GameMoveInfo() {
-  const { winnerPlayer, winnerSymbol } = useGameContext();
-}
-```
-
----
-
-### 4. **Хардкод конфигурации**
-
-```tsx
-// ❌ ПЛОХО - Game.tsx
-const PLAYERS_COUNT = 2;
-const CELL_SIZE = 19;
-```
-
-**Проблема:** Нельзя изменить без редактирования кода.
-
-**Решение:** Вынести в конфиг или props:
-```tsx
-// ✅ ХОРОШО - config/game.ts
-export const GAME_CONFIG = {
-  defaultPlayersCount: 2,
-  defaultCellSize: 19,
-  minCellSize: 3,
-  maxCellSize: 30,
-}
-```
-
----
-
-### 5. **Типы в mock файлах**
-
-```tsx
-// ❌ ПЛОХО
-import { PlayerDataSymbolType } from "@/mock/players/mock-players";
-```
-
-**Проблема:** Бизнес-логика зависит от моков.
-
-**Решение:** Вынести типы:
-```tsx
-// ✅ ХОРОШО - types/game.ts
-export type PlayerSymbol = "cross" | "zero" | "tringle" | "square";
-export type Player = {
-  id: number;
-  name: string;
-  rating: number;
-  avatar: StaticImageData;
-  symbol: PlayerSymbol;
-}
-
-// mock-players.ts
-import type { Player } from "@/types/game";
-```
-
----
-
-## 📋 Рекомендации по рефакторингу
-
-### 🔥 **Высокий приоритет:**
-
-1. **Развязать Game.tsx от mock данных**
-   ```
-   Game.tsx должен принимать players через props
-   ```
-
-2. **Разделить useGameState на несколько хуков**
-   ```
-   useGameCells + useGameMoves + useWinner + useGameActions
-   ```
-
-3. **Вынести типы из mock файлов**
-   ```
-   Создать types/game.ts, types/player.ts
-   ```
-
-4. **Добавить Context для game state**
-   ```
-   Решит проблему props drilling
-   ```
-
-### ⚙️ **Средний приоритет:**
-
-5. **Конфигурация игры в отдельный модуль**
-   ```
-   config/game.ts с настройками
-   ```
-
-6. **Header должен получать данные через props**
-   ```tsx
-   <Header user={currentUser} />
-   ```
-
-7. **Создать Game Container и Game Presentation**
-   ```
-   Разделить логику и UI
-   ```
-
-### 💡 **Низкий приоритет:**
-
-8. **Добавить GameService для бизнес-логики**
-   ```
-   Инкапсулировать всю игровую логику
-   ```
-
-9. **Переиспользование computeWinner**
-   ```
-   Параметры sequenceSize и fieldSize в конфиг
-   ```
-
----
-
-## ✨ Предложенная структура после рефакторинга
+Проект построен на Next.js 15 + React 19 + TypeScript с использованием Tailwind CSS.
 
 ```
 src/
-├── types/                        # ✨ НОВОЕ
-│   ├── game.ts                   # Типы игры
-│   └── player.ts                 # Типы игрока
-│
-├── config/                       # ✨ НОВОЕ
-│   └── game.ts                   # Конфигурация игры
-│
-├── context/                      # ✨ НОВОЕ
-│   └── GameContext.tsx           # Context для состояния
-│
-├── services/                     # ✨ НОВОЕ (опционально)
-│   └── gameService.ts            # Бизнес-логика
-│
-├── components/
-│   ├── game/
-│   │   ├── Game.container.tsx    # ✨ ИЗМЕНЕНО (логика)
-│   │   ├── Game.presentation.tsx # ✨ НОВОЕ (UI)
-│   │   │
-│   │   ├── hooks/
-│   │   │   ├── useGameCells.ts   # ✨ РАЗДЕЛЕНО
-│   │   │   ├── useGameMoves.ts   # ✨ РАЗДЕЛЕНО
-│   │   │   ├── useWinner.ts      # ✨ РАЗДЕЛЕНО
-│   │   │   └── useGameActions.ts # ✨ РАЗДЕЛЕНО
-│   │   │
-│   │   ├── model/                # ✅ БЕЗ ИЗМЕНЕНИЙ
-│   │   │   ├── computeWinner.ts
-│   │   │   ├── computeWinnerSymbol.ts
-│   │   │   └── getNextMove.ts
-│   │   │
-│   │   ├── constants.ts          # ✅ БЕЗ ИЗМЕНЕНИЙ
-│   │   └── ui/                   # ✅ БЕЗ ИЗМЕНЕНИЙ
-│   │
-│   └── header/
-│       └── Header.tsx            # ✨ ИЗМЕНЕНО (props)
-│
-├── mock/
-│   └── players/
-│       └── mock-players.ts       # ✨ ИЗМЕНЕНО (без типов)
-│
-└── app/
-    └── page.tsx                  # ✨ ИЗМЕНЕНО (данные сверху)
+├── app/                    # Next.js App Router
+├── components/             # Основные компоненты
+│   ├── game/              # Игровая логика
+│   │   ├── model/         # БИЗНЕС-ЛОГИКА
+│   │   ├── ui/            # ПРЕЗЕНТАЦИОННЫЙ СЛОЙ
+│   │   └── constants.ts   # Константы игры
+│   ├── header/            # Шапка сайта
+│   └── profile/           # Профиль пользователя
+├── icon-components/        # Иконки
+├── ui-components/         # Переиспользуемые UI компоненты
+└── mock/                  # Моковые данные
 ```
 
 ---
 
-## 🎯 Итоговая оценка
+## 🎯 БИЗНЕС-ЛОГИКА, КОМПОЗИЦИЯ И ВЕРСТКА
 
-| Критерий | Оценка | Комментарий |
-|----------|--------|-------------|
-| **SRP** | 6/10 | Model слой отличный, но Game.tsx и useGameState делают слишком много |
-| **Low Coupling** | 5/10 | Сильная связь с mock данными, множество перекрёстных импортов |
-| **High Cohesion** | 8/10 | Хорошая группировка по папкам, логичная структура |
-| **Общая архитектура** | 6.5/10 | Хорошая база, но нужен рефакторинг перед масштабированием |
+### 📌 БИЗНЕС-ЛОГИКА (Business Logic)
+**Местоположение:** `src/components/game/model/`
+
+Чистые функции, реализующие правила игры:
+
+1. **`computeWinner.ts`** (линии 3-57)
+   - Алгоритм поиска победной последовательности
+   - Проверка горизонталей, вертикалей, диагоналей
+   - Работает с любым размером поля и длиной последовательности
+
+2. **`getNextMove.ts`** (линии 4-12)
+   - Определение следующего хода
+   - Циклический переход между игроками
+
+3. **`computeWinnerSymbol.ts`** (линии 10-20)
+   - Определение символа победителя
+   - Логика завершения игры
+
+4. **`reducerGameState.ts`** (линии 36-61)
+   - Управление состоянием игры через reducer
+   - Обработка действий: ход, сброс игры
+   - Проверка валидности хода
+
+### 🧩 КОМПОЗИЦИЯ (Composition)
+**Местоположение:** `src/components/game/Game.tsx`
+
+Компонент `Game` (линии 25-92) - пример **композиции компонентов**:
+```typescript
+<GameLayout
+  title={<GameTitle />}
+  gameInfo={<GameInfo />}
+  playersList={playersList}
+  gameMoveInfo={<GameMoveInfo />}
+  actions={<GameActions />}
+>
+  {cells.map((symbol, index) => (
+    <GameCell>
+      <GameSymbol />
+    </GameCell>
+  ))}
+</GameLayout>
+```
+
+Композиция позволяет:
+- Собирать сложный UI из простых блоков
+- Переиспользовать компоненты
+- Легко менять структуру
+- Инъектировать зависимости через props
+
+### 🎨 ВЕРСТКА + ЛОГИКА ОТОБРАЖЕНИЯ
+**Местоположение:** `src/components/game/ui/`
+
+1. **`GameLayout.tsx`** - структурная разметка, grid-система
+2. **`GameCell.tsx`** - ячейка с условными стилями (isWinner, disabled)
+3. **`GameActions.tsx`** - условный рендеринг кнопок
+4. **`GameSymbol.tsx`** - маппинг символа на иконку
+5. **`PlayerInfo.tsx`** - отображение информации игрока
+6. **`GameInfo.tsx`** - информация о количестве игроков
 
 ---
 
-## 🚀 План рефакторинга (пошагово)
+## 🔷 ООП ПРИНЦИПЫ В ПРОЕКТЕ
 
-### Шаг 1: Типы и конфиг (1-2 часа)
-- [ ] Создать `types/game.ts` и `types/player.ts`
-- [ ] Создать `config/game.ts`
-- [ ] Обновить все импорты типов
+### 1. 🔀 ПОЛИМОРФИЗМ (Polymorphism)
 
-### Шаг 2: Развязка от моков (2-3 часа)
-- [ ] Game.tsx принимает players через props
-- [ ] Header.tsx принимает user через props
-- [ ] Удалить импорты mock из компонентов
+#### **Пример 1: `GameSymbol.tsx` (линии 16-22)**
+```typescript
+const Icon = {
+  [GAME_SYMBOLS.CROSS]: CrossIcon,
+  [GAME_SYMBOLS.ZERO]: ZeroIcon,
+  [GAME_SYMBOLS.TRINGLE]: TringleIcon,
+  [GAME_SYMBOLS.SQUARE]: SquareIcon,
+}[symbol] ?? CrossIcon;
 
-### Шаг 3: Разделение useGameState (3-4 часа)
-- [ ] Создать useGameCells
-- [ ] Создать useGameMoves
-- [ ] Создать useWinner
-- [ ] Создать useGameActions
-- [ ] Удалить старый useGameState
+return <Icon className={className} />;
+```
+**Объяснение:** Один интерфейс (GameSymbol) работает с разными типами иконок. В зависимости от символа рендерится разный компонент, но API остается единым.
 
-### Шаг 4: Context API (2-3 часа)
-- [ ] Создать GameContext
-- [ ] Обернуть Game в Provider
-- [ ] Убрать props drilling
+#### **Пример 2: `Button.tsx` (линии 19-30)**
+```typescript
+const buttonClassName = clsx(
+  {
+    md: "rounded px-6 py-2 text-sm leading-tight",
+    lg: "rounded-lg px-5 py-2 text-2xl leading-tight",
+  }[size],
+  {
+    primary: "bg-sky-600 hover:bg-sky-500 text-white",
+    outline: "border border-sky-600 text-sky-600 hover:bg-sky-50",
+  }[variant]
+);
+```
+**Объяснение:** Один компонент кнопки имеет множество вариаций через props (size, variant).
 
-### Шаг 5: Container/Presentation (2 часа)
-- [ ] Разделить Game на Container и Presentation
-- [ ] Вынести логику в Container
+### 2. 🔒 ИНКАПСУЛЯЦИЯ (Encapsulation)
 
-**Общее время: ~10-14 часов**
+#### **Пример 1: Модель игры `model/index.ts`**
+```typescript
+export { getNextMove } from "./getNextMove";
+export { computeWinner } from "./computeWinner";
+export { computeWinnerSymbol } from "./computeWinnerSymbol";
+export { GAME_STATE_ACTIONS, initGameState, reducerGameState } from "./reducerGameState";
+```
+**Объяснение:** 
+- Внутренняя реализация скрыта в отдельных файлах
+- Экспортируется только публичный API
+- Детали алгоритма `computeWinner` скрыты от компонента `Game`
+
+#### **Пример 2: `reducerGameState.ts`**
+```typescript
+export const initGameState = (): GameStateType => {
+  const fieldSize = 19;
+  return {
+    cells: new Array(fieldSize * fieldSize).fill(null),
+    currentMove: GAME_SYMBOLS.CROSS,
+    playersCount: 2,
+    fieldSize,
+    sequenceSize: fieldSize > 5 ? 5 : 3,
+  };
+};
+```
+**Объяснение:** Логика инициализации состояния скрыта внутри функции. Компоненты не знают о деталях расчета размера поля.
+
+### 3. 🧱 АБСТРАКЦИЯ (Abstraction)
+
+#### **Пример 1: `GameLayout.tsx` (линии 1-9)**
+```typescript
+type GameLayoutType = {
+  title: React.ReactNode;
+  gameInfo: React.ReactNode;
+  playersList: React.ReactNode;
+  gameMoveInfo: React.ReactNode;
+  actions: React.ReactNode;
+  children: React.ReactNode;
+  fieldSize?: number;
+};
+```
+**Объяснение:** 
+- `GameLayout` принимает абстракции (`React.ReactNode`)
+- Не знает о конкретных компонентах
+- Отвечает только за расположение элементов
+- Можно подставить любые компоненты
+
+#### **Пример 2: TypeScript типы**
+```typescript
+type PlayerDataSymbolType = (typeof GAME_SYMBOLS)[keyof typeof GAME_SYMBOLS];
+type GameStateType = {
+  cells: Array<null | PlayerDataSymbolType>;
+  currentMove: PlayerDataSymbolType;
+  // ...
+};
+```
+**Объяснение:** Создаются абстрактные типы данных, которые описывают контракты без привязки к реализации.
+
+#### **Пример 3: Reducer Actions**
+```typescript
+export const GAME_STATE_ACTIONS = {
+  CELL_CLICK: "cell-click",
+  TICK: "tick",
+  RESET: "reset",
+} as const;
+```
+**Объяснение:** Абстракция над действиями. Компоненты оперируют семантическими экшенами, а не строками напрямую.
 
 ---
 
-## 💬 Заключение
+## 📐 СХЕМА АРХИТЕКТУРЫ И ЗАВИСИМОСТЕЙ
 
-**Сильные стороны:**
-- ✅ Хорошая структура папок
-- ✅ Чистый model слой
-- ✅ Разделение на компоненты
-- ✅ Использование TypeScript
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         app/page.tsx                         │
+│                      (Entry Point)                           │
+└──────────────────┬──────────────────┬────────────────────────┘
+                   │                  │
+         ┌─────────▼───────┐   ┌──────▼─────────┐
+         │     Header      │   │      Game      │
+         │   (UI Layer)    │   │  (Controller)  │
+         └─────────────────┘   └────────┬───────┘
+                                        │
+                    ┌───────────────────┼──────────────────┐
+                    │                   │                  │
+          ┌─────────▼────────┐  ┌───────▼────────┐  ┌────▼─────────┐
+          │   game/model/    │  │   game/ui/     │  │  constants   │
+          │ (BUSINESS LOGIC) │  │ (PRESENTATION) │  │   (CONFIG)   │
+          └─────────┬────────┘  └───────┬────────┘  └──────────────┘
+                    │                   │
+        ┌───────────┼───────────┐       │
+        │           │           │       │
+   ┌────▼────┐ ┌────▼────┐ ┌───▼────┐  │
+   │reducer  │ │compute  │ │getNext │  │
+   │GameState│ │Winner   │ │Move    │  │
+   └─────────┘ └─────────┘ └────────┘  │
+                                        │
+                    ┌───────────────────┼──────────────┐
+                    │                   │              │
+            ┌───────▼────┐      ┌───────▼─────┐  ┌────▼──────┐
+            │ GameLayout │      │  GameCell   │  │GameSymbol │
+            │ GameInfo   │      │ GameActions │  │PlayerInfo │
+            │ GameTitle  │      │ GameMoveInfo│  └─────┬─────┘
+            └────────────┘      └─────────────┘        │
+                                                        │
+                                                ┌───────▼────────┐
+                                                │ icon-components│
+                                                │  (CrossIcon,   │
+                                                │   ZeroIcon)    │
+                                                └────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                    ui-components/                            │
+│            (Button, Modal - reusable UI)                     │
+└──────────────────────────────────────────────────────────────┘
 
-**Что требует внимания:**
-- ⚠️ Зависимость от mock данных
-- ⚠️ God object в useGameState
-- ⚠️ Props drilling
-- ⚠️ Типы в неправильных местах
+┌──────────────────────────────────────────────────────────────┐
+│                        mock/                                 │
+│                  (PLAYERS data)                              │
+└──────────────────────────────────────────────────────────────┘
+```
 
-**Вывод:** Приложение имеет хорошую базу, но перед добавлением API, мультиплеера или других фич требуется рефакторинг для улучшения расширяемости и поддерживаемости.
+### Потоки данных:
+```
+User Action (click) 
+    → Game.handleCellClick 
+        → dispatch(CELL_CLICK) 
+            → reducerGameState 
+                → computeWinner 
+                    → getNextMove
+                        → UI Update
+```
+
+---
+
+## ⚠️ СЛАБЫЕ МЕСТА ПРОЕКТА
+
+### 🔴 КРИТИЧЕСКИЕ
+
+#### 1. **Отсутствие тестов**
+- ❌ Нет unit-тестов для бизнес-логики
+- ❌ Нет интеграционных тестов
+- ❌ Сложная логика `computeWinner` не покрыта тестами
+- **Риск:** Рефакторинг может сломать игру незаметно
+
+#### 2. **Хардкод в `reducerGameState.ts` (линия 25)**
+```typescript
+const fieldSize = 19; // Хардкод!
+```
+- ❌ Размер поля зашит в коде
+- ❌ Невозможно изменить без правки кода
+- **Решение:** Вынести в конфиг или props
+
+#### 4. **Нет обработки ошибок**
+- ❌ Нет проверки границ массива в `computeWinner`
+- ❌ Нет fallback при ошибке загрузки изображений
+- ❌ Нет обработки некорректных данных
+
+### 🟡 ВАЖНЫЕ
+
+#### 5. **Моковые данные в продакшн-коде**
+```typescript
+import { PLAYERS } from "@/mock/players/mock-players";
+```
+- ⚠️ Моки импортируются напрямую в компонент
+- ⚠️ Нет API слоя
+- **Решение:** Создать сервисный слой, использовать DI
+
+#### 6. **Нет разделения логики в `Game.tsx`**
+- ⚠️ Компонент делает слишком много: управление состоянием + рендеринг
+- ⚠️ 93 строки в одном компоненте
+- **Решение:** Вынести в кастомный хук `useGameLogic()`
+
+```typescript
+// Предлагаемое решение:
+function useGameLogic() {
+  const [gameState, dispatch] = useReducer(reducerGameState, initGameState());
+  const nextMove = getNextMove(gameState.currentMove, gameState.playersCount);
+  const winnerSequence = computeWinner(gameState);
+  const winnerSymbol = computeWinnerSymbol({ gameState, winnerSequence, nextMove });
+  
+  const handleCellClick = useCallback((index: number) => {
+    dispatch({ type: GAME_STATE_ACTIONS.CELL_CLICK, index });
+  }, []);
+  
+  const resetGame = useCallback(() => {
+    dispatch({ type: GAME_STATE_ACTIONS.RESET });
+  }, []);
+  
+  return { gameState, winnerSymbol, handleCellClick, resetGame, nextMove, winnerSequence };
+}
+```
+
+#### 7. **Неоптимизированная перерисовка**
+- ⚠️ `GameCell` был без `React.memo` (сейчас исправлено!)
+- ⚠️ `handleCellClick` пересоздается при каждом рендере (хотя есть `useCallback`)
+- ⚠️ Все 361 ячейка (19x19) перерисовываются при каждом ходе
+- **Решение:** Использовать `useCallback` для всех обработчиков, мемоизация
+
+#### 8. **Отсутствие типизации событий**
+```typescript
+onClick?: () => void;
+```
+- ⚠️ Нет типизации для React.MouseEvent
+- **Решение:** `onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;`
+
+#### 9. **Магические числа**
+```typescript
+const gap = Math.floor(sequenceSize / 2); // Что такое gap?
+```
+- ⚠️ Нет комментариев к сложной логике
+- ⚠️ Непонятные имена переменных (`res[0]`, `res[1]`)
+
+### 🟢 НЕЗНАЧИТЕЛЬНЫЕ
+
+#### 10. **Дублирование аватарок**
+```typescript
+avatar: avatarHacker, // У всех одинаковый!
+```
+
+#### 11. **Нет валидации пропсов**
+- Button принимает size и variant, но нет защиты от невалидных значений
+
+#### 12. **Смешение языков**
+- Код на английском, UI на русском
+- Комментарии на русском в коде
+
+#### 13. **Неиспользуемый action `TICK`**
+```typescript
+TICK: "tick", // Нигде не используется
+```
+
+#### 14. **Отсутствие адаптивности**
+- Игра не адаптируется под мобильные устройства
+- Фиксированная ширина 731px
+
+#### 15. **Нет accessibility**
+- ❌ Нет `aria-label` для кнопок
+- ❌ Нет поддержки клавиатуры (Tab, Enter)
+- ❌ Нет `alt` текстов для иконок
+
+---
+
+## 🎯 СИЛЬНЫЕ СТОРОНЫ
+
+✅ **Четкое разделение ответственности** - model/ui/components  
+✅ **TypeScript** - строгая типизация  
+✅ **Функциональный подход** - чистые функции в model  
+✅ **React hooks** - современный подход  
+✅ **Композиция компонентов** - переиспользуемость  
+✅ **Tailwind CSS** - быстрая стилизация  
+✅ **Next.js 15** - современный фреймворк  
+✅ **Инкапсуляция логики** - бизнес-логика отделена от UI  
+
+---
+
+## 📋 РЕКОМЕНДАЦИИ
+
+### Первоочередные задачи:
+1. 🔥 **Исправить баг с `actions.index`**
+2. 🔥 **Добавить тесты для бизнес-логики**
+3. 🔥 **Вынести хардкод размера поля в конфиг**
+4. ⚡ **Создать кастомный хук `useGameLogic()`**
+5. ⚡ **Добавить обработку ошибок**
+6. ⚡ **Создать API слой вместо прямого импорта моков**
+
+### Среднесрочные:
+7. Добавить валидацию пропсов
+8. Улучшить типизацию событий
+9. Добавить комментарии к сложной логике
+10. Реализовать адаптивность
+
+### Долгосрочные:
+11. Добавить E2E тесты
+12. Реализовать i18n для мультиязычности
+13. Добавить полную accessibility поддержку
+14. Оптимизировать производительность (виртуализация для больших полей)
+
+---
+
+## 🏆 ОБЩАЯ ОЦЕНКА
+
+**Архитектура:** 7/10  
+**Качество кода:** 7/10  
+**Производительность:** 6/10  
+**Поддерживаемость:** 8/10  
+**Тестирование:** 0/10  
+
+**Итого:** 6.5/10
+
+Проект имеет хорошую базовую архитектуру с правильным разделением ответственности, но требует улучшений в области тестирования, обработки ошибок и оптимизации производительности.
 

@@ -39,7 +39,7 @@ export const reducerGameState = (
 ) => {
   switch (actions.type) {
     case GAME_STATE_ACTIONS.CELL_CLICK: {
-      if (actions.index && state.cells[actions.index]) {
+      if (actions.index !== undefined && state.cells[actions.index]) {
         return state;
       }
 

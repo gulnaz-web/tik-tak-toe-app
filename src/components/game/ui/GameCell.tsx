@@ -1,14 +1,17 @@
 import clsx from "clsx";
+import { memo } from "react";
 
 type GameCellType = {
   children: React.ReactNode;
+  index: number;
   isWinner: boolean | undefined;
   disabled: boolean;
-  onCellClick: () => void;
+  onCellClick: (index: number) => void;
 };
 
-export function GameCell({
+export const GameCell = memo(function GameCell({
   children,
+  index,
   isWinner,
   disabled,
   onCellClick,
@@ -21,9 +24,9 @@ export function GameCell({
         disabled ? "bg-gray-50" : "cursor-pointer",
         isWinner && "bg-orange-600/10",
       )}
-      onClick={onCellClick}
+      onClick={() => onCellClick(index)}
     >
       {children}
     </button>
   );
-}
+});

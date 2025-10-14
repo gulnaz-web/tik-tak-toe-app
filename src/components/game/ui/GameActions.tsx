@@ -20,9 +20,6 @@ export const GameActions = ({ isWinner, playAgain }: GameActionsType) => {
   }
   return (
     <>
-      <Button className="cursor-pointer" size="md" variant="primary">
-        Ничья
-      </Button>
       <Button className="cursor-pointer" size="md" variant="outline">
         Сдаться
       </Button>
