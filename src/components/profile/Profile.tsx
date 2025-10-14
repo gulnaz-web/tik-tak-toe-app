@@ -2,7 +2,7 @@ import Image, { StaticImageData } from "next/image";
 import avatarSrc from "@/mock/players/images/avatarHacker.png";
 import clsx from "clsx";
 
-type ProfileType = {
+type ProfileProps = {
   name: string;
   rating: number;
   className?: string;
@@ -14,7 +14,7 @@ export function Profile({
   name,
   rating,
   avatar = avatarSrc,
-}: ProfileType) {
+}: ProfileProps) {
   return (
     <div
       className={clsx(
