@@ -1,4 +1,4 @@
-type GameLayoutType = {
+type GameLayoutProps = {
   title: React.ReactNode;
   gameInfo: React.ReactNode;
   playersList: React.ReactNode;
@@ -16,7 +16,7 @@ export function GameLayout({
   actions,
   children,
   fieldSize = 19,
-}: GameLayoutType) {
+}: GameLayoutProps) {
   return (
     <div className="pb-10">
       <div className="pl-2">

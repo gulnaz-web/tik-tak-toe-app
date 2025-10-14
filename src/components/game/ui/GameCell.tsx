@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { memo } from "react";
 
-type GameCellType = {
+type GameCellProps = {
   children: React.ReactNode;
   index: number;
   isWinner: boolean | undefined;
@@ -15,7 +15,7 @@ export const GameCell = memo(function GameCell({
   isWinner,
   disabled,
   onCellClick,
-}: GameCellType) {
+}: GameCellProps) {
   return (
     <button
       disabled={disabled}

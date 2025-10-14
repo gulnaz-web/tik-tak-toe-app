@@ -7,12 +7,12 @@ import {
 import { GAME_SYMBOLS } from "@/components/game/constants";
 import { PlayerDataSymbolType } from "@/mock/players/mock-players";
 
-type GameSymbolType = {
+type GameSymbolProps = {
   className?: string;
   symbol: PlayerDataSymbolType;
 };
 
-export function GameSymbol({ symbol, className }: GameSymbolType) {
+export function GameSymbol({ symbol, className }: GameSymbolProps) {
   const Icon =
     {
       [GAME_SYMBOLS.CROSS]: CrossIcon,

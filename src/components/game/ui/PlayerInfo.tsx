@@ -3,12 +3,12 @@ import Image from "next/image";
 import { PlayerDataType } from "@/mock/players/mock-players";
 import { GameSymbol } from "./GameSymbol";
 
-type PlayerInfoType = {
+type PlayerInfoProps = {
   isRight: boolean;
   playerInfo: PlayerDataType;
 };
 
-export function PlayerInfo({ isRight, playerInfo }: PlayerInfoType) {
+export function PlayerInfo({ isRight, playerInfo }: PlayerInfoProps) {
   return (
     <div
       className={clsx("flex gap-3 items-center", isRight && "justify-self-end")}

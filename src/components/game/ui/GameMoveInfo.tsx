@@ -4,7 +4,7 @@ import {
 } from "@/mock/players/mock-players";
 import { GameSymbol } from "./GameSymbol";
 
-type GameMoveInfoType = {
+type GameMoveInfoProps = {
   winnerSymbol: PlayerDataSymbolType | null;
   winnerPlayer: PlayerDataType | undefined;
   currentMove: PlayerDataSymbolType;
@@ -16,7 +16,7 @@ export function GameMoveInfo({
   winnerPlayer,
   currentMove,
   nextMove,
-}: GameMoveInfoType) {
+}: GameMoveInfoProps) {
   if (winnerSymbol) {
     return (
       <div className="flex gap-3 items-center">
