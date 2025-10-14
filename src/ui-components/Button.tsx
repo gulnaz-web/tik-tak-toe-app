@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 
-type ButtonType = {
+type ButtonProps = {
   children: React.ReactNode;
   className?: string;
   size: "md" | "lg";
@@ -15,7 +15,7 @@ export function Button({
   size,
   variant,
   ...props
-}: ButtonType) {
+}: ButtonProps) {
   const buttonClassName = clsx(
     "transition-colors",
     className,

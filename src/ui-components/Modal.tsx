@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { createPortal } from "react-dom";
 import { MouseEvent, ReactNode } from "react";
 
-type ModalType = {
+type ModalProps = {
   width?: "md" | "full";
   className?: string;
   children: ReactNode;
@@ -16,7 +16,7 @@ export function Modal({
   children,
   isOpen = false,
   onClose,
-}: ModalType) {
+}: ModalProps) {
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
     const inModal = (e.target as HTMLElement).closest("[data-id=modal]");
     if (inModal) return;
