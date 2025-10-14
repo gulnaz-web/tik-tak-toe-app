@@ -8,7 +8,7 @@ type GameLayoutType = {
   fieldSize?: number;
 };
 
-export const GameLayout = ({
+export function GameLayout({
   title,
   gameInfo,
   playersList,
@@ -16,7 +16,7 @@ export const GameLayout = ({
   actions,
   children,
   fieldSize = 19,
-}: GameLayoutType) => {
+}: GameLayoutType) {
   return (
     <div className="pb-10">
       <div className="pl-2">
@@ -48,4 +48,4 @@ export const GameLayout = ({
       </div>
     </div>
   );
-};
+}
