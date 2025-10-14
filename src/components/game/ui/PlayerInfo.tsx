@@ -8,7 +8,7 @@ type PlayerInfoType = {
   playerInfo: PlayerDataType;
 };
 
-export const PlayerInfo = ({ isRight, playerInfo }: PlayerInfoType) => {
+export function PlayerInfo({ isRight, playerInfo }: PlayerInfoType) {
   return (
     <div
       className={clsx("flex gap-3 items-center", isRight && "justify-self-end")}
@@ -38,4 +38,4 @@ export const PlayerInfo = ({ isRight, playerInfo }: PlayerInfoType) => {
       </div>
     </div>
   );
-};
+}
