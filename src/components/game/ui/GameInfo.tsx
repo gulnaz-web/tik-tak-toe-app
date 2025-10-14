@@ -4,7 +4,7 @@ type GameInfoType = {
   playersCount: number;
 };
 
-export const GameInfo = ({ playersCount }: GameInfoType) => {
+export function GameInfo({ playersCount }: GameInfoType) {
   return (
     <div className="flex items-center gap-3 text-xs text-slate-400">
       <div className="flex items-center gap-1">
@@ -12,4 +12,4 @@ export const GameInfo = ({ playersCount }: GameInfoType) => {
       </div>
     </div>
   );
-};
+}
