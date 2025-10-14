@@ -1,4 +1,8 @@
-export const SquareIcon = ({ className }: { className?: string }) => {
+type SquareIconProps = {
+  className?: string;
+};
+
+export function SquareIcon({ className }: SquareIconProps) {
   return (
     <svg
       className={className}
@@ -14,4 +18,4 @@ export const SquareIcon = ({ className }: { className?: string }) => {
       />
     </svg>
   );
-};
+}

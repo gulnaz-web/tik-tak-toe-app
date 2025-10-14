@@ -1,4 +1,8 @@
-export const ZeroIcon = ({ className }: { className?: string }) => {
+type ZeroIconProps = {
+  className?: string;
+};
+
+export function ZeroIcon({ className }: ZeroIconProps) {
   return (
     <svg
       className={className}
@@ -14,4 +18,4 @@ export const ZeroIcon = ({ className }: { className?: string }) => {
       />
     </svg>
   );
-};
+}

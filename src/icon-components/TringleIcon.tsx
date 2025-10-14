@@ -1,4 +1,8 @@
-export const TringleIcon = ({ className }: { className?: string }) => {
+type TringleIconProps = {
+  className?: string;
+};
+
+export function TringleIcon({ className }: TringleIconProps) {
   return (
     <svg
       className={className}
@@ -14,4 +18,4 @@ export const TringleIcon = ({ className }: { className?: string }) => {
       />
     </svg>
   );
-};
+}

@@ -1,4 +1,8 @@
-export const CrossIcon = ({ className }: { className?: string }) => {
+type CrossIconProps = {
+  className?: string;
+};
+
+export function CrossIcon({ className }: CrossIconProps) {
   return (
     <svg
       className={className}
@@ -14,4 +18,4 @@ export const CrossIcon = ({ className }: { className?: string }) => {
       />
     </svg>
   );
-};
+}
