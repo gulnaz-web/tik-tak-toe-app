@@ -9,12 +9,12 @@ type ProfileType = {
   avatar?: StaticImageData;
 };
 
-export const Profile = ({
+export function Profile({
   className,
   name,
   rating,
   avatar = avatarSrc,
-}: ProfileType) => {
+}: ProfileType) {
   return (
     <div
       className={clsx(
@@ -31,4 +31,4 @@ export const Profile = ({
       </div>
     </div>
   );
-};
+}
