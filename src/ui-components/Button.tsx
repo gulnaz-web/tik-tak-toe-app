@@ -9,13 +9,13 @@ type ButtonType = {
   onClick?: () => void;
 };
 
-export const Button = ({
+export function Button({
   children,
   className,
   size,
   variant,
   ...props
-}: ButtonType) => {
+}: ButtonType) {
   const buttonClassName = clsx(
     "transition-colors",
     className,
@@ -34,4 +34,4 @@ export const Button = ({
       {children}
     </button>
   );
-};
+}

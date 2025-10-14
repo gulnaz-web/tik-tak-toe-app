@@ -10,13 +10,13 @@ type ModalType = {
   onClose: () => void;
 };
 
-export const Modal = ({
+export function Modal({
   width = "md",
   className,
   children,
   isOpen = false,
   onClose,
-}: ModalType) => {
+}: ModalType) {
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
     const inModal = (e.target as HTMLElement).closest("[data-id=modal]");
     if (inModal) return;
@@ -61,7 +61,7 @@ export const Modal = ({
   );
 
   return createPortal(modal, document.getElementById("modals")!);
-};
+}
 
 type ModalSubComponentProps = {
   children: ReactNode;
