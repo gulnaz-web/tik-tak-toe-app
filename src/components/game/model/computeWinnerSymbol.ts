@@ -1,20 +1,20 @@
 import { PlayerDataSymbolType } from "@/mock/players/mock-players";
-import { GameStateType } from "@/components/game/hooks/useGameState";
+import { GameStateType } from "./reducerGameState";
 
 type ComputeWinnerSymbolType = {
-  cells: GameStateType["cells"];
-  currentMove: GameStateType["currentMove"];
+  gameState: GameStateType;
   winnerSequence: number[] | undefined;
   nextMove: PlayerDataSymbolType;
 };
 
 export function computeWinnerSymbol({
-  cells,
-  currentMove,
+  gameState,
   winnerSequence,
   nextMove,
 }: ComputeWinnerSymbolType) {
   if (!winnerSequence) return null;
 
-  return nextMove === currentMove ? currentMove : cells[winnerSequence?.[0]];
+  return nextMove === gameState.currentMove
+    ? gameState.currentMove
+    : gameState.cells[winnerSequence?.[0]];
 }

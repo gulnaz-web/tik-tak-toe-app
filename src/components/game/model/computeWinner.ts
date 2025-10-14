@@ -1,10 +1,8 @@
-import { GameStateType } from "@/components/game/hooks/useGameState";
+import { GameStateType } from "./reducerGameState";
 
-export function computeWinner(
-  cells: GameStateType["cells"],
-  sequenceSize = 5,
-  fieldSize = 19,
-) {
+export function computeWinner(gameState: GameStateType) {
+  const { cells, fieldSize, sequenceSize } = gameState;
+
   const gap = Math.floor(sequenceSize / 2);
 
   function compareElements(indexes: Array<number>) {

@@ -5,6 +5,7 @@ type GameLayoutType = {
   gameMoveInfo: React.ReactNode;
   actions: React.ReactNode;
   children: React.ReactNode;
+  fieldSize?: number;
 };
 
 export const GameLayout = ({
@@ -14,6 +15,7 @@ export const GameLayout = ({
   gameMoveInfo,
   actions,
   children,
+  fieldSize = 19,
 }: GameLayoutType) => {
   return (
     <div className="pb-10">
@@ -28,10 +30,21 @@ export const GameLayout = ({
 
       <div className="bg-white rounded-2xl shadow-md px-8 pt-5 pb-7 mt-6">
         <div className="flex gap-3 items-center">
-          <div className="mr-auto">{gameMoveInfo}</div>
+          <div className="mr-auto">
+            <div className="flex gap-3 items-center">{gameMoveInfo}</div>
+          </div>
           {actions}
         </div>
-        {children}
+
+        <div
+          className="grid pl-px pt-px mt-3 w-full max-w-[700px] mx-auto aspect-square"
+          style={{
+            gridTemplateColumns: `repeat(${fieldSize}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${fieldSize}, minmax(0, 1fr))`,
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

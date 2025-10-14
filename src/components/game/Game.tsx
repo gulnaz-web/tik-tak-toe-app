@@ -1,64 +1,88 @@
 "use client";
 
+import { useReducer } from "react";
 import {
   GameTitle,
   GameInfo,
-  GameField,
   GameMoveInfo,
   GameLayout,
   GameActions,
   PlayerInfo,
+  GameCell,
+  GameSymbol,
 } from "./ui";
-import { useGameState } from "./hooks/useGameState";
+import {
+  getNextMove,
+  computeWinner,
+  computeWinnerSymbol,
+  GAME_STATE_ACTIONS,
+  initGameState,
+} from "./model";
 import { PLAYERS } from "@/mock/players/mock-players";
+import { reducerGameState } from "./model/reducerGameState";
 
-const PLAYERS_COUNT = 2;
-const CELL_SIZE = 19;
-
+// КОМПОЗИЦИЯ (соединение нескольких компонентов)
 export const Game = () => {
-  const {
-    cells,
-    currentMove,
-    nextMove,
+  const [gameState, dispatch] = useReducer(reducerGameState, initGameState());
+
+  const nextMove = getNextMove(gameState.currentMove, gameState.playersCount);
+  const winnerSequence = computeWinner(gameState);
+  const winnerSymbol = computeWinnerSymbol({
+    gameState,
     winnerSequence,
-    winnerSymbol,
-    cellClick,
-    resetGame,
-  } = useGameState(PLAYERS_COUNT, CELL_SIZE);
+    nextMove,
+  });
+
+  const handleCellClick = (index: number) => {
+    dispatch({
+      type: GAME_STATE_ACTIONS.CELL_CLICK,
+      index,
+    });
+  };
+
+  const resetGame = () => {
+    dispatch({ type: GAME_STATE_ACTIONS.RESET });
+  };
 
   return (
     <>
       <GameLayout
-        title={<GameTitle />}
-        gameInfo={<GameInfo playersCount={PLAYERS_COUNT} />}
-        playersList={PLAYERS.slice(0, PLAYERS_COUNT).map((player, index) => (
-          <PlayerInfo
-            key={player.id}
-            playerInfo={player}
-            isRight={index % 2 === 1}
-          />
-        ))}
+        title={<GameTitle />} // ВЕРСТКА
+        gameInfo={<GameInfo playersCount={gameState.playersCount} />} // ВЕРТСКА и ЛОГИКА ОТОБРАЖЕНИЯ
+        playersList={PLAYERS.slice(0, gameState.playersCount).map(
+          (player, index) => (
+            <PlayerInfo
+              key={player.id}
+              playerInfo={player}
+              isRight={index % 2 === 1}
+            />
+          ),
+        )}
         gameMoveInfo={
           <GameMoveInfo
             winnerPlayer={PLAYERS.find(
               (player) => player.symbol === winnerSymbol,
             )}
             winnerSymbol={winnerSymbol}
-            currentMove={currentMove}
+            currentMove={gameState.currentMove}
             nextMove={nextMove}
           />
         }
         actions={
-          <GameActions isWinner={!!winnerSymbol} playAgain={resetGame} />
+          <GameActions isWinner={!!winnerSymbol} playAgain={resetGame} /> // ВЕРТСКА и ЛОГИКА ОТОБРАЖЕНИЯ
         }
+        fieldSize={gameState.fieldSize}
       >
-        <GameField
-          cells={cells}
-          onCellClick={cellClick}
-          winnerSequence={winnerSequence}
-          winnerSymbol={winnerSymbol}
-          cellSize={CELL_SIZE}
-        />
+        {gameState.cells.map((symbol, index) => (
+          <GameCell
+            key={index}
+            onCellClick={() => handleCellClick(index)}
+            isWinner={winnerSequence?.includes(index)}
+            disabled={!!winnerSymbol}
+          >
+            {symbol && <GameSymbol symbol={symbol} className="w-5 h-5" />}
+          </GameCell>
+        ))}
       </GameLayout>
     </>
   );

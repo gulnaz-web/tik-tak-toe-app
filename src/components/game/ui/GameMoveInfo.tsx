@@ -31,6 +31,7 @@ export function GameMoveInfo({
       </div>
     );
   }
+
   return (
     <div className="flex gap-3 items-center">
       <div className="mr-auto">
