@@ -51,7 +51,7 @@ export function Modal({
           className="
             w-8 h-8 rounded  flex items-center justify-center 
             hover:bg-white/40 bg-white/10 transition-colors
-            absolute top-0 left-[calc(100%+12px)]"
+            absolute top-0 left-[calc(100%+12px)] cursor-pointer"
         >
           <CrossLightIcon className="w-4 h-4 text-white" />
         </button>
