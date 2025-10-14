@@ -15,11 +15,11 @@ import {
   getNextMove,
   computeWinner,
   computeWinnerSymbol,
-  GAME_STATE_ACTIONS,
   initGameState,
+  reducerGameState,
+  GAME_STATE_ACTIONS,
 } from "./model";
 import { PLAYERS } from "@/mock/players/mock-players";
-import { reducerGameState } from "./model/reducerGameState";
 
 // КОМПОЗИЦИЯ (соединение нескольких компонентов)
 export const Game = () => {
