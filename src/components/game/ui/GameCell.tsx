@@ -4,7 +4,7 @@ import { memo } from "react";
 type GameCellProps = {
   children: React.ReactNode;
   index: number;
-  isWinner: boolean | undefined;
+  isWinner: boolean;
   disabled: boolean;
   onCellClick: (index: number) => void;
 };

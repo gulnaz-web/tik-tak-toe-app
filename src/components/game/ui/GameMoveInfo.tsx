@@ -5,6 +5,7 @@ import {
 import { GameSymbol } from "./GameSymbol";
 
 type GameMoveInfoProps = {
+  isLoading: boolean;
   winnerSymbol: PlayerDataSymbolType | null;
   winnerPlayer: PlayerDataType | undefined;
   currentMove: PlayerDataSymbolType;
@@ -12,11 +13,24 @@ type GameMoveInfoProps = {
 };
 
 export function GameMoveInfo({
+  isLoading,
   winnerSymbol,
   winnerPlayer,
   currentMove,
   nextMove,
 }: GameMoveInfoProps) {
+  if (isLoading) {
+    return (
+      <div className="flex gap-3 items-center">
+        <div className="mr-auto">
+          <div className="flex items-center gap-1 text-xs leading-tight text-slate-400">
+            Загрузка...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (winnerSymbol) {
     return (
       <div className="flex gap-3 items-center">

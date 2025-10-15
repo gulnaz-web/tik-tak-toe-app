@@ -1,11 +1,18 @@
 import { Button } from "@/ui-components";
 
 type GameActionsProps = {
+  isLoading: boolean;
   isWinner: boolean;
   playAgain: () => void;
 };
 
-export function GameActions({ isWinner, playAgain }: GameActionsProps) {
+export function GameActions({
+  isLoading,
+  isWinner,
+  playAgain,
+}: GameActionsProps) {
+  if (isLoading) return;
+
   if (isWinner) {
     return (
       <Button

@@ -13,6 +13,7 @@ export type GameStateType = {
 type ReducerActionType = {
   type: (typeof GAME_STATE_ACTIONS)[keyof typeof GAME_STATE_ACTIONS];
   index?: number;
+  playersCount?: number;
 };
 
 export const GAME_STATE_ACTIONS = {
@@ -21,22 +22,23 @@ export const GAME_STATE_ACTIONS = {
   RESET: "reset",
 } as const;
 
-export const initGameState = (): GameStateType => {
-  const fieldSize = 19;
-
+export function initGameState(
+  playersCount: number | undefined = 2,
+  fieldSize: number | undefined = 19,
+): GameStateType {
   return {
     cells: new Array(fieldSize * fieldSize).fill(null),
     currentMove: GAME_SYMBOLS.CROSS,
-    playersCount: 2,
+    playersCount,
     fieldSize,
     sequenceSize: fieldSize > 5 ? 5 : 3,
   };
-};
+}
 
-export const reducerGameState = (
+export function reducerGameState(
   state: GameStateType,
   actions: ReducerActionType,
-) => {
+) {
   switch (actions.type) {
     case GAME_STATE_ACTIONS.CELL_CLICK: {
       if (actions.index !== undefined && state.cells[actions.index]) {
@@ -52,10 +54,10 @@ export const reducerGameState = (
       };
     }
     case GAME_STATE_ACTIONS.RESET: {
-      return initGameState();
+      return initGameState(state.playersCount, state.fieldSize);
     }
     default: {
       return state;
     }
   }
-};
+}

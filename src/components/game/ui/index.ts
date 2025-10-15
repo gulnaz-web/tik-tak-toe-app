@@ -6,3 +6,4 @@ export { GameMoveInfo } from "./GameMoveInfo";
 export { GameActions } from "./GameActions";
 export { PlayerInfo } from "./PlayerInfo";
 export { GameSymbol } from "./GameSymbol";
+export { GameSettingsModal } from "./GameSettingsModal";
