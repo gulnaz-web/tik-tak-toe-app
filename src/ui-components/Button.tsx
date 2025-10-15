@@ -7,6 +7,7 @@ type ButtonProps = {
   size: "md" | "lg";
   variant: "primary" | "outline";
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 export function Button({
