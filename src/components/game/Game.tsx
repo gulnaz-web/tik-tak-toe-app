@@ -19,7 +19,7 @@ import {
   reducerGameState,
   GAME_STATE_ACTIONS,
 } from "./model";
-import { PLAYERS } from "@/mock/players/mock-players";
+import { PlayerDataSymbolType, PLAYERS } from "@/mock/players/mock-players";
 
 type GameProps = {
   playersCount: number | undefined;
@@ -73,6 +73,7 @@ export function Game({ playersCount, fieldSize }: GameProps) {
   return (
     <>
       <GameLayout
+        gameState={gameState}
         title={<GameTitle />}
         gameInfo={
           <GameInfo
@@ -99,12 +100,9 @@ export function Game({ playersCount, fieldSize }: GameProps) {
             playAgain={resetGame}
           />
         }
-        fieldSize={gameState.fieldSize}
-      >
-        {!isLoading &&
-          gameState.cells.map((symbol, index) => (
+        renderCell={(symbol: PlayerDataSymbolType | null, index: number) =>
+          !isLoading ? (
             <GameCell
-              key={index}
               index={index}
               onCellClick={handleCellClick}
               isWinner={Boolean(winnerSequence?.includes(index))}
@@ -112,8 +110,9 @@ export function Game({ playersCount, fieldSize }: GameProps) {
             >
               {symbol && <GameSymbol symbol={symbol} className="w-5 h-5" />}
             </GameCell>
-          ))}
-      </GameLayout>
+          ) : null
+        }
+      />
     </>
   );
 }

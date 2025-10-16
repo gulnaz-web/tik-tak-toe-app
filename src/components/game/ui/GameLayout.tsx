@@ -1,21 +1,28 @@
+import React from "react";
+import { GameStateType } from "@/components/game/model/reducerGameState";
+import { PlayerDataSymbolType } from "@/mock/players/mock-players";
+
 type GameLayoutProps = {
+  gameState: GameStateType;
   title: React.ReactNode;
   gameInfo: React.ReactNode;
   playersList: React.ReactNode;
   gameMoveInfo: React.ReactNode;
   actions: React.ReactNode;
-  children: React.ReactNode;
-  fieldSize?: number;
+  renderCell: (
+    symbol: PlayerDataSymbolType | null,
+    index: number,
+  ) => React.ReactNode;
 };
 
 export function GameLayout({
+  gameState,
   title,
   gameInfo,
   playersList,
   gameMoveInfo,
   actions,
-  children,
-  fieldSize = 19,
+  renderCell,
 }: GameLayoutProps) {
   return (
     <div className="pb-10">
@@ -39,11 +46,15 @@ export function GameLayout({
         <div
           className="grid pl-px pt-px mt-3 w-full max-w-[700px] mx-auto aspect-square"
           style={{
-            gridTemplateColumns: `repeat(${fieldSize}, minmax(0, 1fr))`,
-            gridTemplateRows: `repeat(${fieldSize}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${gameState?.fieldSize}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${gameState?.fieldSize}, minmax(0, 1fr))`,
           }}
         >
-          {children}
+          {gameState?.cells?.map((symbol, index) => (
+            <React.Fragment key={index}>
+              {renderCell(symbol, index)}
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </div>
