@@ -2,33 +2,20 @@ import { Button } from "@/ui-components";
 
 type GameActionsProps = {
   isLoading: boolean;
-  isWinner: boolean;
-  playAgain: () => void;
+  resetGame: () => void;
 };
 
 export function GameActions({
   isLoading,
-  isWinner,
-  playAgain,
+  resetGame,
 }: GameActionsProps) {
   if (isLoading) return;
 
-  if (isWinner) {
-    return (
-      <Button
-        onClick={playAgain}
-        className="cursor-pointer"
-        size="md"
-        variant="primary"
-      >
-        Играть снова
-      </Button>
-    );
-  }
+
   return (
     <>
-      <Button className="cursor-pointer" size="md" variant="outline">
-        Сдаться
+      <Button onClick={resetGame} className="cursor-pointer" size="md" variant="outline">
+        Играть заново
       </Button>
     </>
   );

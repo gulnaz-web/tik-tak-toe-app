@@ -26,9 +26,6 @@ export function PlayerInfo({ isRight, playerInfo }: PlayerInfoProps) {
             <div className=" text-lg leading-tight truncate ">
               {playerInfo.name}
             </div>
-            <div className="text-slate-400 text-xs leading-tight">
-              Рейтинг: {playerInfo.rating}
-            </div>
           </div>
         </div>
 

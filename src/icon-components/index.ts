@@ -1,4 +1,3 @@
-export { ArrowIcon } from "./ArrowIcon";
 export { UserIcon } from "./UserIcon";
 export { CrossIcon } from "./CrossIcon";
 export { ZeroIcon } from "./ZeroIcon";

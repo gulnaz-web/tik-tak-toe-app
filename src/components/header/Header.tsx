@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Logo from "./logo.png";
-import { Profile } from "@/components";
-import { ArrowIcon, SettingsIcon } from "@/icon-components";
+import { SettingsIcon } from "@/icon-components";
 
 type HeaderProps = {
   onSettingsClick: () => void;
@@ -18,16 +17,14 @@ export function Header({ onSettingsClick }: HeaderProps) {
       </div>
 
       <div className="ml-auto flex items-center gap-2 text-start text-sky-600 ">
-        <Profile name="Hacker" rating={1230} />
-        <ArrowIcon />
+        <button
+          onClick={onSettingsClick}
+          className="ml-6 p-2 rounded-lg cursor-pointer transition-colors text-gray-600 hover:text-gray-900"
+          title="Настройки"
+        >
+          <SettingsIcon className="w-6 h-6" />
+        </button>
       </div>
-      <button
-        onClick={onSettingsClick}
-        className="ml-6 p-2 rounded-lg cursor-pointer transition-colors text-gray-600 hover:text-gray-900"
-        title="Настройки"
-      >
-        <SettingsIcon className="w-6 h-6" />
-      </button>
     </header>
   );
 }
