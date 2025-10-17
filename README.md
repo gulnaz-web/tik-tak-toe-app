@@ -12,7 +12,6 @@
 
 ### Frontend
 - **Next.js 15** — React-фреймворк с SSR и статичным экспортом
-- **React 19** — последняя версия библиотеки
 - **TypeScript** — строгая типизация и type safety
 - **Tailwind CSS 4** — utility-first CSS фреймворк
 
