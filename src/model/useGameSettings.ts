@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import type { GameStateType } from "@/components/game/model/reducerGameState";
+import { GAME_STATE_STORAGE_KEY } from "./constants";
 
 type GameSettings = {
   playersCount: number;
   fieldSize: number;
 };
-
-const STORAGE_KEY = "tic-tac-toe-settings";
 
 const initialGameSettings: GameSettings = {
   playersCount: 2,
@@ -18,20 +18,30 @@ export const useGameSettings = () => {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(GAME_STATE_STORAGE_KEY);
       if (stored) {
-        setGameSettings(JSON.parse(stored));
+        const gameState = JSON.parse(stored) as GameStateType;
+        setGameSettings({
+          playersCount: gameState.playersCount,
+          fieldSize: gameState.fieldSize,
+        });
       } else {
         setGameSettings(initialGameSettings);
       }
 
       setKey((key) => key + 1);
-    } catch {}
+    } catch {
+      setGameSettings(initialGameSettings);
+      setKey((key) => key + 1);
+    }
   }, []);
 
   const handleSettingsSave = (settings: GameSettings) => {
     setGameSettings(settings);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(GAME_STATE_STORAGE_KEY);
+    }
 
     setKey((key) => key + 1);
   };

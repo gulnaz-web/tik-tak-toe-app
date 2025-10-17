@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useReducer } from "react";
+import { useCallback, useMemo } from "react";
 import {
   GameTitle,
   GameInfo,
@@ -10,16 +10,15 @@ import {
   PlayerInfo,
   GameCell,
   GameSymbol,
-} from "./ui";
+} from "@/components/game/ui";
 import {
   getNextMove,
   computeWinner,
   computeWinnerSymbol,
-  initGameState,
-  reducerGameState,
   GAME_STATE_ACTIONS,
-} from "./model";
+} from "@/components/game/model";
 import { PlayerDataSymbolType, PLAYERS } from "@/mock/players/mock-players";
+import { useGameState } from "@/model/useGameState";
 
 type GameProps = {
   playersCount: number | undefined;
@@ -27,10 +26,10 @@ type GameProps = {
 };
 
 export function Game({ playersCount, fieldSize }: GameProps) {
-  const [gameState, dispatch] = useReducer(
-    reducerGameState,
-    initGameState(playersCount, fieldSize),
-  );
+  const { gameState, dispatch, resetGame } = useGameState({
+    playersCount,
+    fieldSize,
+  });
   const isLoading = Boolean(!playersCount || !fieldSize);
 
   const nextMove = getNextMove(gameState.currentMove, gameState.playersCount);
@@ -41,16 +40,15 @@ export function Game({ playersCount, fieldSize }: GameProps) {
     nextMove,
   });
 
-  const handleCellClick = useCallback((index: number) => {
-    dispatch({
-      type: GAME_STATE_ACTIONS.CELL_CLICK,
-      index,
-    });
-  }, []);
-
-  const resetGame = () => {
-    dispatch({ type: GAME_STATE_ACTIONS.RESET });
-  };
+  const handleCellClick = useCallback(
+    (index: number) => {
+      dispatch({
+        type: GAME_STATE_ACTIONS.CELL_CLICK,
+        index,
+      });
+    },
+    [dispatch],
+  );
 
   const playersList = useMemo(() => {
     if (isLoading) {
@@ -93,12 +91,7 @@ export function Game({ playersCount, fieldSize }: GameProps) {
             nextMove={nextMove}
           />
         }
-        actions={
-          <GameActions
-            isLoading={isLoading}
-            resetGame={resetGame}
-          />
-        }
+        actions={<GameActions isLoading={isLoading} resetGame={resetGame} />}
         renderCell={(symbol: PlayerDataSymbolType | null, index: number) =>
           !isLoading ? (
             <GameCell

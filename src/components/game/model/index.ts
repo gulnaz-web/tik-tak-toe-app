@@ -6,4 +6,5 @@ export {
   GAME_STATE_ACTIONS,
   initGameState,
   reducerGameState,
+  type GameStateType,
 } from "./reducerGameState";
