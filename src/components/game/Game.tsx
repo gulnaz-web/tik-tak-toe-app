@@ -96,8 +96,7 @@ export function Game({ playersCount, fieldSize }: GameProps) {
         actions={
           <GameActions
             isLoading={isLoading}
-            isWinner={!!winnerSymbol}
-            playAgain={resetGame}
+            resetGame={resetGame}
           />
         }
         renderCell={(symbol: PlayerDataSymbolType | null, index: number) =>
