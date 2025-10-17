@@ -9,7 +9,7 @@ type GameSettings = {
 
 const initialGameSettings: GameSettings = {
   playersCount: 2,
-  fieldSize: 19,
+  fieldSize: 3,
 };
 
 export const useGameSettings = () => {
